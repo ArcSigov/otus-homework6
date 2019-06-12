@@ -4,8 +4,6 @@
 #include <cstring>
 
 
-enum class bulk_status{run,end_of_line,dynamic_block,end_dynamic_block};
-
 
 class bulk_handler
 {    
@@ -28,7 +26,6 @@ public:
 
     void start()
     {  
-       
         static auto protector = 0;
         subs.clear();
         for (auto i = 0; i < bulk_size;i++)
@@ -36,7 +33,7 @@ public:
             std::string line;
             if (std::getline(std::cin,line))
             {
-                subs.emplace_back(line);
+                subs.push_back(line);
             }
             else
             {
@@ -51,7 +48,7 @@ public:
     }
     void run_bulk()
     {
-        for (auto it : _hndl)
+        for (const auto& it : _hndl)
             it->handler_run(&subs);
     }
 private:
