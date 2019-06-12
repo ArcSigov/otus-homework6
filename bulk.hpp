@@ -1,43 +1,62 @@
 #include <vector>
 #include <memory>
 #include <tuple>
+#include <cstring>
 
+
+enum class bulk_status{run,end_of_line,dynamic_block,end_dynamic_block};
 
 
 class bulk_handler
 {    
 public:
-    virtual void handler_run(const std::tuple<int, std::string> &tuple) = 0;
+    virtual void handler_run(const  std::vector<std::string> *vectr) = 0;
 };
+
+
+
 
 class bulk
 {
     std::vector<bulk_handler*> _hndl;
 public:
-    bulk(int _bulk = int()):bulk_size(_bulk){};
-
+    bulk(int _bulk):bulk_size(_bulk){subs.reserve(bulk_size);};
     void add_handler(bulk_handler* _new)
     {
         _hndl.emplace_back(_new);
     }
 
-    void get_input_stream()
-    {   
-        static std::string line;
-        auto asize = 0;
-        while (std::getline(std::cin,line))
-        {   
-           
+    void start()
+    {  
+       
+        static auto protector = 0;
+        subs.clear();
+        for (auto i = 0; i < bulk_size;i++)
+        {
+            std::string line;
+            if (std::getline(std::cin,line))
+            {
+                subs.emplace_back(line);
+            }
+            else
+            {
+                protector = 1;
+                break;
+            }
         }
-        std::cout << line << std::endl;
+        run_bulk();
+
+        if (!protector)
+           start();
     }
-    void run_bulk(const std::string& input)
+    void run_bulk()
     {
         for (auto it : _hndl)
-            it->handler_run(std::make_tuple(bulk_size,input));
+            it->handler_run(&subs);
     }
 private:
     int bulk_size;
+    std::vector<std::string> subs;
 };
 
 
@@ -48,7 +67,7 @@ public:
     {
         _bulk->add_handler(this);
     }
-    void handler_run (const std::tuple<int, std::string> &tuple) override
+    void handler_run (const  std::vector<std::string> *vectr)  override
     {
         //std::cout << "write_to_file " << std::endl;
     }
@@ -62,11 +81,18 @@ public:
     {
         _bulk->add_handler(this);
     }
-    void handler_run(const std::tuple<int, std::string>& tuple) override
-    {
-        std::string output;
-        int size = 0;
-        std::tie(size,output) = tuple;
-        //std::cout << "bulk: " << output << std::endl;
+    void handler_run(const std::vector<std::string> *vectr) override
+    {        
+        if (vectr->size())
+            std::cout << "bulk: ";
+        for (auto it = vectr->cbegin() ; it !=vectr->cend();it++)
+        {
+            if (it != vectr->cbegin())
+                std::cout << ",";
+            std::cout << *it;
+        }
+        if (vectr->size())
+            std::cout << std::endl;
+        
     }
 };
