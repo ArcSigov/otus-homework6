@@ -1,14 +1,12 @@
 #include <vector>
-#include <memory>
 #include <tuple>
-#include <cstring>
 #include <chrono>
-
+#include <fstream>
 
 class bulk_handler
 {    
 public:
-    virtual void handler_run(const  std::vector<std::string>& vectr) = 0;
+    virtual void handler_run(std::tuple<std::vector<std::string>,unsigned long long> &tuple) = 0;
 };
 
 
@@ -117,8 +115,9 @@ public:
     }
     void notify()
     {
+        auto returned = std::make_tuple(subs,time);
         for (const auto& it : _hndl)
-            it->handler_run(subs);
+            it->handler_run(returned);
     }
 private:
     unsigned int bulk_size;
@@ -134,9 +133,21 @@ public:
     {
         _bulk->add_handler(this);
     }
-    void handler_run (const  std::vector<std::string>& vectr)  override
+    void handler_run (std::tuple<std::vector<std::string>,unsigned long long> &tuple) override
     {
-        //std::cout << "write_to_file " << std::endl;
+        std::vector<std::string> vectr;
+        unsigned long long cur_time = 0;
+        std::tie(vectr,cur_time) = tuple;
+        std::ofstream output("bulk" + std::to_string(cur_time) +".log");
+        output << "bulk: ";
+        for (auto it = vectr.cbegin() ; it !=vectr.cend();it++)
+        {
+            if (it != vectr.cbegin())
+                output << ", ";
+            output << *it;
+        }
+        output<< std::endl;
+        output.close();
     }
 };
 
@@ -148,8 +159,10 @@ public:
     {
         _bulk->add_handler(this);
     }
-    void handler_run(const std::vector<std::string>& vectr) override
+    void handler_run (std::tuple<std::vector<std::string>,unsigned long long> &tuple) override
     {
+        std::vector<std::string> vectr;
+        std::tie(vectr,std::ignore) = tuple;
         std::cout << "bulk: ";
         for (auto it = vectr.cbegin() ; it !=vectr.cend();it++)
         {
