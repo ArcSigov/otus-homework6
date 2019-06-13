@@ -1,0 +1,7 @@
+[
+{
+  "directory": "/home/sigov/doc/otus-homework6/build",
+  "command": "/usr/bin/clang++-6.0    -g   -Wpedantic -Wall -Wextra -std=gnu++1z -o CMakeFiles/bulk.dir/bulk.cpp.o -c /home/sigov/doc/otus-homework6/bulk.cpp",
+  "file": "/home/sigov/doc/otus-homework6/bulk.cpp"
+}
+]

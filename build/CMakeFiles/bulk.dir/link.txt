@@ -1,0 +1,1 @@
+/usr/bin/clang++-6.0  -g  -rdynamic CMakeFiles/bulk.dir/bulk.cpp.o  -o bulk 

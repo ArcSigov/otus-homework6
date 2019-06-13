@@ -1,0 +1,24 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/sigov/doc/otus-homework6/bulk.cpp
+iostream
+-
+bulk.hpp
+/home/sigov/doc/otus-homework6/bulk.hpp
+
+/home/sigov/doc/otus-homework6/bulk.hpp
+vector
+-
+tuple
+-
+chrono
+-
+fstream
+-
+

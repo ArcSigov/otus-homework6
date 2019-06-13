@@ -6,11 +6,8 @@
 class bulk_handler
 {    
 public:
-    virtual void handler_run(std::tuple<std::vector<std::string>,unsigned long long> &tuple) = 0;
+    virtual void handler_run(const std::tuple<std::vector<std::string>,unsigned long long> &tuple) = 0;
 };
-
-
-
 
 class bulk
 {
@@ -115,9 +112,8 @@ public:
     }
     void notify()
     {
-        auto returned = std::make_tuple(subs,time);
         for (const auto& it : _hndl)
-            it->handler_run(returned);
+            it->handler_run(std::make_tuple(subs,time));
     }
 private:
     unsigned int bulk_size;
@@ -133,7 +129,7 @@ public:
     {
         _bulk->add_handler(this);
     }
-    void handler_run (std::tuple<std::vector<std::string>,unsigned long long> &tuple) override
+    void handler_run (const std::tuple<std::vector<std::string>,unsigned long long> &tuple) override
     {
         std::vector<std::string> vectr;
         unsigned long long cur_time = 0;
@@ -159,7 +155,7 @@ public:
     {
         _bulk->add_handler(this);
     }
-    void handler_run (std::tuple<std::vector<std::string>,unsigned long long> &tuple) override
+    void handler_run (const std::tuple<std::vector<std::string>,unsigned long long> &tuple) override
     {
         std::vector<std::string> vectr;
         std::tie(vectr,std::ignore) = tuple;
