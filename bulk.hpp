@@ -43,13 +43,14 @@ public:
                     if (!line_protector)
                     {
                          if (output.size())
-                             output.pop_back();
+                             output.erase(output.find_last_of(","));
                          break;
                     }
                 }
                 else
                 {
-                    output+=line+=",";
+                    
+                    output+=line+=", ";
                 }       
            }
            else
@@ -63,7 +64,7 @@ public:
 
         return std::make_tuple(protector,output);
     }
-    auto run_bulk(std::chrono::system_clock::time_point start_time)
+    auto run_bulk()
     {  
         static auto protector = 0;
         subs.clear();
@@ -71,6 +72,7 @@ public:
         for (unsigned int i = 0; i < bulk_size;i++)
         {
             std::string line;
+            auto start_time = std::chrono::system_clock::now();
             if (std::getline(std::cin,line))
             {
                 if (i==0)
@@ -78,14 +80,13 @@ public:
 
                 if (line == "{")
                 {
-                    std::string dynamic_block;
-                    std::tie(protector,dynamic_block) = get_dynamic_block();
-                    if (dynamic_block.size())
-                        subs.push_back(dynamic_block);
+                    std::tie(protector,line) = get_dynamic_block();
+                    if (line.size())
+                        subs.push_back(line);
                     if (protector)
                         break;
                 }
-                else if (line != "}" && line != "{")
+                else if (line != "}")
                 {
                     subs.push_back(line);
                 }
@@ -107,7 +108,7 @@ public:
         auto protector = 0;
         while (!protector)
         {
-            protector  = run_bulk(std::chrono::system_clock::now());
+            protector  = run_bulk();
         }
     }
     void notify()
