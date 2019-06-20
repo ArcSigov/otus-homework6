@@ -18,5 +18,5 @@ int main(int argc , char* argv[])
             std::cerr << "bulk: no arguments to run handler" << std::endl;
         }
         
-    return 1;
+    return 0;
 }

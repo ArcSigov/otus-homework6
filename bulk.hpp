@@ -25,6 +25,7 @@ public:
     {
         auto line_protector = 1;
         static auto protector = 0;
+        auto dynamic = 1;
         std::string line {'\n'};
         std::string output;
         while (1)
@@ -44,12 +45,12 @@ public:
                     {
                          if (output.size())
                              output.erase(output.find_last_of(","));
+                         dynamic = 0;
                          break;
                     }
                 }
                 else
                 {
-                    
                     output+=line+=", ";
                 }       
            }
@@ -61,14 +62,13 @@ public:
         }
         if (protector && line_protector)
             output.clear();
-
-        return std::make_tuple(protector,output);
+        
+        return std::make_tuple(protector,dynamic,output);
     }
     auto run_bulk()
     {  
         static auto protector = 0;
-        subs.clear();
-       
+        auto dynamic = 0;
         for (unsigned int i = 0; i < bulk_size;i++)
         {
             std::string line;
@@ -80,11 +80,8 @@ public:
 
                 if (line == "{")
                 {
-                    std::tie(protector,line) = get_dynamic_block();
-                    if (line.size())
-                        subs.push_back(line);
-                    if (protector)
-                        break;
+                    dynamic = 1;
+                    break;
                 }
                 else if (line != "}")
                 {
@@ -98,17 +95,29 @@ public:
             }
             
         }
-        if (subs.size())
-            notify();
-        return protector;
+        return std::make_tuple(dynamic,protector);
     }
     
     void start()
     {
         auto protector = 0;
+        auto dynamic = 0;
         while (!protector)
         {
-            protector  = run_bulk();
+            subs.clear();
+            if (dynamic)
+            {
+                std::string line;
+                std::tie(protector,dynamic,line) = get_dynamic_block();
+                if (!line.empty())
+                    subs.push_back(line);
+            }
+            else
+            {
+                std::tie(dynamic,protector)  = run_bulk();
+            }
+            if (subs.size())
+                notify();
         }
     }
     void notify()
