@@ -44,7 +44,10 @@ public:
                     if (!line_protector)
                     {
                          if (output.size())
+                         {
                              output.erase(output.find_last_of(","));
+                             subs.push_back(output);
+                         }
                          dynamic = 0;
                          break;
                     }
@@ -60,10 +63,7 @@ public:
                break;
            }
         }
-        if (protector && line_protector)
-            output.clear();
-        
-        return std::make_tuple(protector,dynamic,output);
+        return std::make_tuple(dynamic,protector);
     }
     auto run_bulk()
     {  
@@ -77,7 +77,7 @@ public:
             {
                 if (i==0)
                     time = std::chrono::duration_cast<std::chrono::seconds>(start_time.time_since_epoch()).count();
-
+        
                 if (line == "{")
                 {
                     dynamic = 1;
@@ -107,10 +107,7 @@ public:
             subs.clear();
             if (dynamic)
             {
-                std::string line;
-                std::tie(protector,dynamic,line) = get_dynamic_block();
-                if (!line.empty())
-                    subs.push_back(line);
+                std::tie(dynamic,protector) = get_dynamic_block();
             }
             else
             {
