@@ -21,6 +21,35 @@ public:
     {
         _hndl.emplace_back(_new);
     }
+    void start()
+    {
+        auto protector = 0;
+        auto dynamic = 0;
+        while (!protector)
+        {
+            subs.clear();
+            if (dynamic)
+            {
+                std::tie(dynamic,protector) = get_dynamic_block();
+            }
+            else
+            {
+                std::tie(dynamic,protector)  = run_bulk();
+            }
+            if (subs.size())
+                notify();
+        }
+    }
+    void notify()
+    {
+        for (const auto& it : _hndl)
+            it->handler_run(std::make_tuple(subs,time));
+    }
+private:
+    unsigned int bulk_size;
+    unsigned long long time;
+    std::vector<std::string> subs;
+    
     auto get_dynamic_block()
     {
         auto line_protector = 1;
@@ -97,35 +126,6 @@ public:
         }
         return std::make_tuple(dynamic,protector);
     }
-    
-    void start()
-    {
-        auto protector = 0;
-        auto dynamic = 0;
-        while (!protector)
-        {
-            subs.clear();
-            if (dynamic)
-            {
-                std::tie(dynamic,protector) = get_dynamic_block();
-            }
-            else
-            {
-                std::tie(dynamic,protector)  = run_bulk();
-            }
-            if (subs.size())
-                notify();
-        }
-    }
-    void notify()
-    {
-        for (const auto& it : _hndl)
-            it->handler_run(std::make_tuple(subs,time));
-    }
-private:
-    unsigned int bulk_size;
-    unsigned long long time;
-    std::vector<std::string> subs;
 };
 
 
