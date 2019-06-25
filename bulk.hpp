@@ -89,6 +89,11 @@ private:
         }
         return std::make_tuple(dynamic,protector);
     }
+    void notify()
+    {
+        for (const auto& it : _hndl)
+            it->handler_run(std::make_tuple(subs,time));
+    }
 public:
     bulk(int _bulk):bulk_size(_bulk)
     {
@@ -116,11 +121,6 @@ public:
             if (subs.size())
                 notify();
         }
-    }
-    void notify()
-    {
-        for (const auto& it : _hndl)
-            it->handler_run(std::make_tuple(subs,time));
     }
 private:
     unsigned int bulk_size;
