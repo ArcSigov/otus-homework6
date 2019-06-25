@@ -12,45 +12,8 @@ public:
 class bulk
 {
     std::vector<bulk_handler*> _hndl;
-public:
-    bulk(int _bulk):bulk_size(_bulk)
-    {
-        subs.reserve(bulk_size);
-    };
-    void add_handler(bulk_handler* _new)
-    {
-        _hndl.emplace_back(_new);
-    }
-    void start()
-    {
-        auto protector = 0;
-        auto dynamic = 0;
-        while (!protector)
-        {
-            subs.clear();
-            if (dynamic)
-            {
-                std::tie(dynamic,protector) = get_dynamic_block();
-            }
-            else
-            {
-                std::tie(dynamic,protector)  = run_bulk();
-            }
-            if (subs.size())
-                notify();
-        }
-    }
-    void notify()
-    {
-        for (const auto& it : _hndl)
-            it->handler_run(std::make_tuple(subs,time));
-    }
 private:
-    unsigned int bulk_size;
-    unsigned long long time;
-    std::vector<std::string> subs;
-    
-    auto get_dynamic_block()
+   auto get_dynamic_block()
     {
         auto line_protector = 1;
         static auto protector = 0;
@@ -126,6 +89,43 @@ private:
         }
         return std::make_tuple(dynamic,protector);
     }
+public:
+    bulk(int _bulk):bulk_size(_bulk)
+    {
+        subs.reserve(bulk_size);
+    };
+    void add_handler(bulk_handler* _new)
+    {
+        _hndl.emplace_back(_new);
+    }
+    void start()
+    {
+        auto protector = 0;
+        auto dynamic = 0;
+        while (!protector)
+        {
+            subs.clear();
+            if (dynamic)
+            {
+                std::tie(dynamic,protector) = get_dynamic_block();
+            }
+            else
+            {
+                std::tie(dynamic,protector)  = run_bulk();
+            }
+            if (subs.size())
+                notify();
+        }
+    }
+    void notify()
+    {
+        for (const auto& it : _hndl)
+            it->handler_run(std::make_tuple(subs,time));
+    }
+private:
+    unsigned int bulk_size;
+    unsigned long long time;
+    std::vector<std::string> subs;
 };
 
 
