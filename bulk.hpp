@@ -132,11 +132,6 @@ auto bulk::get_dynamic_block()
                 
                 if (!line_protector)
                 {
-                        if (output.size())
-                        {
-                            output.erase(output.find_last_of(","));
-                            subs.push_back(output);
-                        }
                         dynamic = 0;
                         first = 1;
                         break;
@@ -149,7 +144,7 @@ auto bulk::get_dynamic_block()
                     time = std::chrono::duration_cast<std::chrono::seconds>(sys_time.time_since_epoch()).count();
                     first = 0;
                 }
-                output+=line+=", ";
+                subs.push_back(line);
             }       
         }
         else
