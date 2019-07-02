@@ -8,7 +8,7 @@
 class bulk_handler
 {    
 public:
-    virtual void handler_run(const std::vector<std::string>& vstr,[[maybe_unused]] const unsigned long long &time) = 0;
+    virtual void handler_run(const std::vector<std::string>& vstr,[[maybe_unused]] const std::size_t &time) = 0;
 };
 
 
@@ -18,15 +18,15 @@ class bulk
     using system_time = std::chrono::time_point<std::chrono::system_clock>;
     std::vector<bulk_handler*> _hndl;
 public:
-    explicit bulk(int _bulk):bulk_size(_bulk), time(0){};
+    explicit bulk(std::size_t _bulk):bulk_size(_bulk), time(0){};
     void start();
     void add_handler(bulk_handler* _new);
 private:
     void notify();
     auto run_bulk();
     auto get_dynamic_block();
-    unsigned int bulk_size;
-    unsigned long long time;
+    std::size_t bulk_size;
+    std::size_t time;
     system_time sys_time;
     std::vector<std::string> subs;
 };
@@ -39,7 +39,7 @@ public:
     {
         _bulk->add_handler(this);
     }
-    void handler_run(const std::vector<std::string>& vstr, [[maybe_unused]] const unsigned long long &time) override
+    void handler_run(const std::vector<std::string>& vstr, [[maybe_unused]] const std::size_t &time) override
     {
         std::ofstream output("bulk" + std::to_string(time) +".log");
         output << "bulk: ";
@@ -62,7 +62,7 @@ public:
     {
         _bulk->add_handler(this);
     }
-    void handler_run(const std::vector<std::string>& vstr,[[maybe_unused]] const unsigned long long &time) override
+    void handler_run(const std::vector<std::string>& vstr,[[maybe_unused]] const std::size_t &time) override
     {
         std::cout << "bulk: ";
         for (auto it = vstr.cbegin() ; it !=vstr.cend();it++)
@@ -80,7 +80,7 @@ auto bulk::run_bulk()
 {  
     static auto protector = 0;
     auto dynamic = 0;
-    for (unsigned int i = 0; i < bulk_size;i++)
+    for (std::size_t i = 0; i < bulk_size;i++)
     {
         std::string line;
         if (std::getline(std::cin,line))
