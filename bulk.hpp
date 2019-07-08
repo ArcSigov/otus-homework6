@@ -42,7 +42,6 @@ public:
     void handler_run(const std::vector<std::string>& vstr, [[maybe_unused]] const std::size_t &time) override
     {
         std::ofstream output("bulk" + std::to_string(time) +".log");
-        output << "bulk: ";
         for (auto it = vstr.cbegin() ; it !=vstr.cend();it++)
         {
             if (it != vstr.cbegin())
@@ -116,7 +115,6 @@ auto bulk::get_dynamic_block()
     auto dynamic = 1;
     static auto first = 1;
     std::string line {'\n'};
-    std::string output;
     while (1)
     {
         if(std::getline(std::cin,line))
@@ -152,6 +150,10 @@ auto bulk::get_dynamic_block()
             protector = 1;
             break;
         }
+    }
+    if (line_protector)
+    {
+        subs.clear();
     }
     return std::make_tuple(dynamic,protector);
 }
